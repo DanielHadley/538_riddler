@@ -6,9 +6,12 @@
 # Extra credit: What if, instead of 60 percent, the doctored coin came up heads some P percent of the time? How does that affect the speed with which you can correctly detect it?
 
 # 
+library(discreteRV)
 x <- c(0:143)
-regular <- dbinom(x, size=143, prob=.5)
-biased <- dbinom(x,size=143,prob=.6)
+regular <- RV(x, dbinom(x, size=143, prob=.5))
+biased <- RV(x, dbinom(x,size=143,prob=.6))
+
+j <- joint(regular, biased)
 
 
 

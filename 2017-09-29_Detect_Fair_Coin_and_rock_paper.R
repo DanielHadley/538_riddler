@@ -5,15 +5,43 @@
 # 
 # Extra credit: What if, instead of 60 percent, the doctored coin came up heads some P percent of the time? How does that affect the speed with which you can correctly detect it?
 
-# 
+ 
 library(discreteRV)
+library(tidyverse)
+# I think this is how the two sides came to their answers:
+
+# First 538's method, which comes from the econ paper
 x <- c(0:143)
 regular <- RV(x, dbinom(x, size=143, prob=.5))
-biased <- RV(x, dbinom(x,size=143,prob=.6))
+biased <- RV(x, dbinom(x, size=143, prob=.6))
 
 j <- joint(regular, biased)
 
+df <- tibble(probs(j), outcomes(j)) %>% 
+  separate(`outcomes(j)`, c("fair", "biased"), ",") %>% 
+  mutate(fair = as.numeric(fair),
+         biased = as.numeric(biased)) %>% 
+  mutate(correct = if_else(biased > fair, 1, 0)) %>% 
+  filter(correct == 1) %>% 
+  summarise(sum(`probs(j)`))
 
+
+# The other way 
+x2 <- c(0:134)
+regular <- RV(x, dbinom(x, size=134, prob=.5))
+biased <- RV(x, dbinom(x,size=134,prob=.6))
+
+j2 <- joint(regular, biased)
+
+df2 <- tibble(probs(j2), outcomes(j2)) %>% 
+  separate(`outcomes(j2)`, c("fair", "biased"), ",") %>% 
+  mutate(fair = as.numeric(fair),
+         biased = as.numeric(biased)) %>%
+  mutate(correct = if_else(biased > fair, 1,
+                           if_else(biased == fair, .5, 0))) %>%
+  mutate(final_prob = `probs(j2)` * correct) %>% 
+  filter(correct > 0) %>% 
+  summarise(sum(final_prob))
 
 
 # I don't thin this answers the question of being 95% confident. It's more the average time of getting to that using Bayesian methods. 

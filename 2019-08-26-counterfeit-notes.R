@@ -25,7 +25,7 @@ inspect_money_bag <- function(money_bag){
   
   counterfeits <- sum(selection)
   
-  prob_spotting <- 1 - (.25 ^ counterfeits)
+  prob_spotting <- 1 - (.75 ^ counterfeits)
   
   spotted_counterfeits <- sample(c(1,0), 1, prob = c(prob_spotting, 1 - prob_spotting))
   
@@ -46,8 +46,11 @@ try_scenario <- function(n){
   
 }
 
-0:10 %>% 
-  map(try_scenario)
+ans <- 0:100 %>% 
+  map(try_scenario) %>% 
+  unlist()
 
+
+plot(c(0:100), ans)
 
 # 5
